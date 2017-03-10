@@ -1,13 +1,16 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { OrganizationComponent } from './organization.component';
+import { SharedModule } from '../shared/shared.module';
+
+const organizationRoutes: Routes = [
+  { path: 'organization/:id', component: OrganizationComponent }
+];
 
 @NgModule({
   imports: [
-    RouterModule.forChild([
-      { path: 'organization', component: OrganizationComponent }
-    ])
-  ],
-  exports: [RouterModule]
+    SharedModule,
+    RouterModule.forChild(organizationRoutes)
+  ]
 })
 export class OrganizationRoutingModule { }

@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
-import { tokenNotExpired } from 'angular2-jwt';
-import { auth0Config } from './auth-config.service';
+import { tokenNotExpired, AUTH_PROVIDERS } from 'angular2-jwt';
+import { AuthConfigService, AuthConfiguration } from './auth-config.service';
 
 declare var Auth0Lock: any;
 
@@ -10,9 +10,8 @@ export class AuthService implements OnInit {
 
   userProfile: any;
 
-  constructor() {}
-
-  ngOnInit(): void {
+  constructor(private authConfigService: AuthConfigService) {
+    let auth0Config = this.authConfigService.getConfig();
     this.lock = new Auth0Lock(auth0Config.clientId, auth0Config.domain, {});
     this.lock.on("authenticated", (authResult) => {
         localStorage.setItem('id_token', authResult.idToken);
@@ -30,6 +29,9 @@ export class AuthService implements OnInit {
         });
       }
     )
+  }
+
+  ngOnInit(): void {
   }
 
   login(): void {
