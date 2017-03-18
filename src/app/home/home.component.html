@@ -1,9 +1,10 @@
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-md-4 col-xs-12" *ngFor="let org of organizations">
-      <h2>{{org.name}}</h2>
-      <p>{{org.metadata.description}}</p>
-      <p><a class="btn btn-default" [routerLink]="['/organization', org.id]" role="button">Details</a></p>
+  <div class="row" *ngIf="!userProfile">
+    <div class="col-md-4 col-xs-12">
+      <h2>Log In</h2>
     </div>
+  </div>
+  <div class="row" *ngIf="userProfile">
+    {{ userProfile.name }}
   </div>
 </div>

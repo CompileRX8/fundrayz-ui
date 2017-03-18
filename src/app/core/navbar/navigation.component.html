@@ -1,22 +1,36 @@
 <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" routerLink="/">FundRayz</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav" routerLinkActive="active">
-              <li class="nav-item"><a class="nav-link" routerLink="/">Home</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li *ngIf="!isAuthenticated()"><button class="btn btn-default navbar-btn" (click)="login()">Log In</button></li>
-                <li *ngIf="isAuthenticated()"><button class="btn btn-default navbar-btn" (click)="logout()">Log Out</button></li>
-            </ul>
-        </div>
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" routerLink="/">FundRayz</a>
     </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav" routerLinkActive="active">
+        <li class="nav-item"><a class="nav-link" routerLink="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/organization">Organizations</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/supporter">Supporters</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li *ngIf="!isAuthenticated()">
+          <button class="btn btn-default navbar-btn" (click)="login()">Log In</button>
+        </li>
+        <li *ngIf="isAuthenticated()" class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{userProfile.name}} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a [routerLink]="['/profile']">Profile</a></li>
+            <li *ngIf="isSiteAdmin()" role="separator" class="divider"></li>
+            <li *ngIf="isSiteAdmin()"><a [routerLink]="['/admin']">Administration</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a role="button" (click)="logout()">Log Out</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
 </nav>

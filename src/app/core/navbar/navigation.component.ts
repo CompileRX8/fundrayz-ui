@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import 'rxjs/add/operator/switchMap';
+
 import { AuthService } from '../authentication/auth.service';
 
 @Component({
@@ -10,10 +12,22 @@ export class NavigationComponent implements OnInit {
 
   constructor(private authService: AuthService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.authService.currentUser().subscribe({
+      next: (profile) => this.userProfile = profile
+    });
+  }
+
+  userProfile: any;
 
   isAuthenticated(): boolean {
-    return this.authService.authenticated();
+    if(this.authService.authenticated()) {
+      if(this.userProfile) {
+        return true;
+      }
+      this.logout();
+    }
+    return false;
   }
 
   login() {
@@ -22,5 +36,9 @@ export class NavigationComponent implements OnInit {
 
   logout() {
     this.authService.logout();
+  }
+
+  isSiteAdmin(): boolean {
+    return this.authService.isSiteAdmin();
   }
 }

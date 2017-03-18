@@ -1,34 +1,51 @@
 import { Injectable, OnInit } from '@angular/core';
-import { tokenNotExpired, AUTH_PROVIDERS } from 'angular2-jwt';
-import { AuthConfigService, AuthConfiguration } from './auth-config.service';
+import { tokenNotExpired } from 'angular2-jwt';
 
-declare var Auth0Lock: any;
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+import { AuthConfigService } from './auth-config.service';
+
+declare let Auth0Lock: any;
 
 @Injectable()
 export class AuthService implements OnInit {
   private lock: any;
 
-  userProfile: any;
+  private userProfileSubject;
+  private userProfile: any;
 
   constructor(private authConfigService: AuthConfigService) {
+    this.userProfileSubject = new BehaviorSubject(null);
+
     let auth0Config = this.authConfigService.getConfig();
     this.lock = new Auth0Lock(auth0Config.clientId, auth0Config.domain, {});
-    this.lock.on("authenticated", (authResult) => {
-        localStorage.setItem('id_token', authResult.idToken);
 
-        this.lock.getProfile(authResult.idToken, (error, profile) => {
+    this.lock.on("authenticated", (authResult) => {
+        this.lock.getUserInfo(authResult.accessToken, (error, profile) => {
           if(error) {
             alert(error);
             return;
           }
 
+          localStorage.setItem('id_token', authResult.idToken);
+
           profile.app_metadata = profile.app_metadata || {};
           profile.user_metadata = profile.user_metadata || {};
           localStorage.setItem('profile', JSON.stringify(profile));
-          this.userProfile = profile;
+
+          this.setUserProfile(profile);
         });
       }
-    )
+    );
+  }
+
+  private setUserProfile(profile: any): void {
+    this.userProfile = profile;
+    this.userProfileSubject.next(profile);
+  }
+
+  currentUser() {
+    return this.userProfileSubject;
   }
 
   ngOnInit(): void {
@@ -45,6 +62,10 @@ export class AuthService implements OnInit {
   logout(): void {
     localStorage.removeItem('id_token');
     localStorage.removeItem('profile');
-    this.userProfile = undefined;
+    this.setUserProfile(null);
+  }
+
+  isSiteAdmin(): boolean {
+    return this.authenticated() && this.userProfile && this.userProfile.app_metadata && this.userProfile.app_metadata.site_admin;
   }
 }

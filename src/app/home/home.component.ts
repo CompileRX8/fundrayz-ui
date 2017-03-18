@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Organization, OrganizationService } from '../organization/organization.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { AuthService } from "../core/authentication/auth.service";
+
+import 'rxjs/add/operator/switchMap';
 
 @Component({
   moduleId: module.id,
@@ -9,15 +11,15 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
   constructor(
-    private organizationService: OrganizationService,
-    private router: Router
+    private authService: AuthService,
+    private route: ActivatedRoute
   ) {}
 
-  private organizations: Organization[];
+  private userProfile: any;
 
   ngOnInit() {
-    this.organizationService
-      .getAllOrganizations()
-      .then(orgs => this.organizations = orgs);
+    this.authService.currentUser().subscribe({
+      next: (profile) => this.userProfile = profile
+    });
   }
 }

@@ -5,8 +5,10 @@ import { CoreModule } from './core/core.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from "./shared/shared.module";
 import { AppRoutingModule } from "./app-routing.module";
-import { OrganizationModule } from "./organization/organization.module";
+import { OrganizationsModule } from "./organizations/organization.module";
 import { HomeModule } from './home/home.module';
+import { SupportersModule } from "./supporters/supporter.module";
+import { AdministratorsModule } from "./administrators/administrator.module";
 
 @NgModule({
   imports: [
@@ -14,7 +16,9 @@ import { HomeModule } from './home/home.module';
     SharedModule,
     CoreModule,
     HomeModule,
-    OrganizationModule,
+    OrganizationsModule,
+    SupportersModule,
+    AdministratorsModule,
     AppRoutingModule,
   ],
   declarations: [
