@@ -2,8 +2,10 @@ import { Injectable, OnInit } from '@angular/core';
 import { tokenNotExpired } from 'angular2-jwt';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
 
 import { AuthConfigService } from './auth-config.service';
+import { ErrorService } from "../error.service";
 
 declare let Auth0Lock: any;
 
@@ -11,18 +13,19 @@ declare let Auth0Lock: any;
 export class AuthService implements OnInit {
   private lock: any;
 
-  private userProfileSubject;
+  private userProfileSubject: BehaviorSubject<any>;
   private userProfile: any;
 
-  constructor(private authConfigService: AuthConfigService) {
+  constructor(private authConfigService: AuthConfigService, private errorService: ErrorService) {
     this.userProfileSubject = new BehaviorSubject(null);
 
     let auth0Config = this.authConfigService.getConfig();
-    this.lock = new Auth0Lock(auth0Config.clientId, auth0Config.domain, {});
+    this.lock = new Auth0Lock(auth0Config.clientId, auth0Config.domain, auth0Config.options);
 
     this.lock.on("authenticated", (authResult) => {
         this.lock.getUserInfo(authResult.accessToken, (error, profile) => {
           if(error) {
+            this.errorService.handleError(error);
             alert(error);
             return;
           }
@@ -44,7 +47,7 @@ export class AuthService implements OnInit {
     this.userProfileSubject.next(profile);
   }
 
-  currentUser() {
+  currentUser(): Observable<any> {
     return this.userProfileSubject;
   }
 
@@ -66,6 +69,6 @@ export class AuthService implements OnInit {
   }
 
   isSiteAdmin(): boolean {
-    return this.authenticated() && this.userProfile && this.userProfile.app_metadata && this.userProfile.app_metadata.site_admin;
+    return this.authenticated() && this.userProfile && this.userProfile.app_metadata && (this.userProfile.app_metadata.site_admin == true);
   }
 }

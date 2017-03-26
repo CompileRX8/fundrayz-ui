@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { WithId, DataService } from "../../core/data.service";
+import { WithId, DataService } from "../core/data.service";
 
 export interface Event extends WithId {
   name: string;

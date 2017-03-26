@@ -22,6 +22,13 @@ export class InMemoryDataService implements InMemoryDbService {
       { id: 4, name: 'Mission Trip Auction 2017', orgId: 1, metadata: {} }
     ];
 
-    return { organizations, supporters, events };
+    let items = [
+      { id: 1, name: 'Something crocheted', itemNumber: '101', eventId: 4, metadata: {} },
+      { id: 2, name: 'Some cheap but hand-made jewelry', itemNumber: '102', eventId: 4, metadata: {} },
+      { id: 3, name: 'The nice vacation the Woodruffs win', itemNumber: '201', eventId: 4, metadata: {} },
+      { id: 4, name: 'Bag of rocks', itemNumber: '401', eventId: 4, metadata: {} }
+    ];
+
+    return { organizations, supporters, events, items };
   }
 }

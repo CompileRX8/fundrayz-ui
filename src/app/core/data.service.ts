@@ -14,17 +14,21 @@ export abstract class DataService<T extends WithId> implements OnInit {
   protected abstract baseUrl: string;
   private headers = new Headers({ 'Content-Type': 'application/json' });
 
-  constructor(private http: Http, private errorService: ErrorService) {
+  constructor(private http: Http) {
   }
 
   ngOnInit() {
   }
 
-  getAll(): Promise<T[]> {
-    return this.http.get(this.baseUrl)
+  private getUrlArray(url: string): Promise<T[]> {
+    return this.http.get(url)
       .toPromise()
       .then(response => response.json().data as T[])
-      .catch(this.errorService.handleError);
+      .catch(ErrorService.handleError);
+  }
+
+  getAll(): Promise<T[]> {
+    return this.getUrlArray(this.baseUrl);
   }
 
   getById(id: number): Promise<T> {
@@ -32,15 +36,17 @@ export abstract class DataService<T extends WithId> implements OnInit {
     return this.http.get(url)
       .toPromise()
       .then(response => response.json().data as T)
-      .catch(this.errorService.handleError);
+      .catch(ErrorService.handleError);
   }
 
   getByOrganization(orgId: number): Promise<T[]> {
     const url = `${this.baseUrl}/?orgId=^${orgId}$`;
-    return this.http.get(url)
-      .toPromise()
-      .then(response => response.json().data as T[])
-      .catch(this.errorService.handleError);
+    return this.getUrlArray(url);
+  }
+
+  getByEvent(eventId: number): Promise<T[]> {
+    const url = `${this.baseUrl}/?eventId=^${eventId}$`;
+    return this.getUrlArray(url);
   }
 
   create(object: T): Promise<T> {
@@ -48,7 +54,7 @@ export abstract class DataService<T extends WithId> implements OnInit {
       .post(this.baseUrl, JSON.stringify(object), { headers: this.headers })
       .toPromise()
       .then(response => response.json().data as T)
-      .catch(this.errorService.handleError);
+      .catch(ErrorService.handleError);
   }
 
   deleteById(id: number): Promise<void> {
@@ -56,7 +62,7 @@ export abstract class DataService<T extends WithId> implements OnInit {
     return this.http.delete(url, { headers: this.headers })
       .toPromise()
       .then(() => null)
-      .catch(this.errorService.handleError);
+      .catch(ErrorService.handleError);
   }
 
   update(object: T): Promise<T> {
@@ -65,6 +71,6 @@ export abstract class DataService<T extends WithId> implements OnInit {
       .put(url, JSON.stringify(object), { headers: this.headers })
       .toPromise()
       .then(() => object)
-      .catch(this.errorService.handleError);
+      .catch(ErrorService.handleError);
   }
 }

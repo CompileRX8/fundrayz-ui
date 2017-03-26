@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { Location } from '@angular/common';
 
 import 'rxjs/add/operator/switchMap';
 
-import { SupporterService, Supporter } from './supporter.service';
-import { OrganizationService, Organization } from '../../organizations/organization/organization.service';
+import { SupporterService, Supporter } from '../supporter.service';
+import { OrganizationService, Organization } from '../../organizations/organization.service';
 import { ErrorService } from '../../core/error.service';
+import { LoggerService } from "../../core/logger.service";
 
 @Component({
   moduleId: module.id,
@@ -17,9 +17,7 @@ export class SupporterComponent implements OnInit {
 
   constructor(private supporterService: SupporterService,
               private organizationService: OrganizationService,
-              private errorService: ErrorService,
-              private route: ActivatedRoute,
-              private location: Location) {
+              private route: ActivatedRoute) {
   }
 
   private supporter: Supporter;
@@ -27,13 +25,18 @@ export class SupporterComponent implements OnInit {
 
   ngOnInit() {
     this.route.params
-      .switchMap((params: Params) => this.supporterService.getById(+params[ 'id' ]))
+      .switchMap((params: Params) => {
+        LoggerService.log("SupporterComponent: params = %s", JSON.stringify(params));
+        let orgId = +params[ 'orgId' ];
+        return this.supporterService.getById(orgId);
+      })
       .subscribe((supporter: Supporter) => {
+        LoggerService.log("SupporterComponent: supporter = %s", JSON.stringify(supporter));
         this.supporter = supporter;
 
         this.organizationService.getById(supporter.orgId)
           .then((organization) => this.organization = organization)
-          .catch(this.errorService.handleError)
+          .catch(ErrorService.handleError)
       });
   }
 }
