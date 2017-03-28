@@ -16,7 +16,7 @@ export class AuthService implements OnInit {
   private userProfileSubject: BehaviorSubject<any>;
   private userProfile: any;
 
-  constructor(private authConfigService: AuthConfigService, private errorService: ErrorService) {
+  constructor(private authConfigService: AuthConfigService) {
     this.userProfileSubject = new BehaviorSubject(null);
 
     let auth0Config = this.authConfigService.getConfig();
@@ -25,7 +25,7 @@ export class AuthService implements OnInit {
     this.lock.on("authenticated", (authResult) => {
         this.lock.getUserInfo(authResult.accessToken, (error, profile) => {
           if(error) {
-            this.errorService.handleError(error);
+            ErrorService.handleError(error);
             alert(error);
             return;
           }
